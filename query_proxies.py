@@ -14,38 +14,53 @@
 
 import requests
 from bs4     import BeautifulSoup
-from Tkinter import *
-import ttk
+import random
+import time
 
 
 class Bot():
-    proxy_list     = ["http://www.httptunnel.ge/ProxyListForFree.aspx"]
-    fname          = "proxies/proxies.txt"
-    custom_proxies = "proxies/userscustom/myproxies.txt"
-    mydivs         = 0
-    url            = 0
-    arr            = []
+    proxy_list     = ["http://www.httptunnel.ge/ProxyListForFree.aspx"] # proxy site
+    fname          = "proxies/proxies.txt" # file name to save proxies
+    custom_proxies = "proxies/userscustom/myproxies.txt" # users custom proxies go here
+    mydivs         = 0  #  gay shit
+    url            = 0  #  url for stream
+    arr            = [] # had to do more gay array shit
+    http_proxy     = []
+
     
+    # start.. main function program start is here
     def main(self):  
         while not self.url:
 
             self.url = raw_input("url -> ")   
 
-        self.proxy_scan(False)
-    
-    def proxy_scan(self, ownFile):
+        self.start(False)
+    # end.. main function program start is here
+
+
+
+
+    # start.. start function. 
+    def start(self, ownFile):
         print("starting proxy scan..")
 
+        # -- start.. User chose to use their own proxy list
         if ownFile == True:
             print("Chose option to connect with your own proxies..")
             try:
                 with open(self.custom_proxies, 'r') as f:
                     
                     print(f.read())
-                    
+                    self.BeginQueue(False)
             except:
                 print("Error")
-                
+        # -- end.. User chose to use their own proxy list
+
+
+
+        
+
+        # -- start.. User chose to use their ezviews proxy list
         else:
             print("Chose option to connect with ezviews proxies..")
             r = requests.get(self.proxy_list[0])
@@ -67,7 +82,7 @@ class Bot():
                 self.write_to_file(self.arr)
                 print(self.arr[1])
                 print(len(self.arr))
-                
+                self.BeginQueue(True)
                            
             else:
                 print("server down trying custom_proxies.txt..")
@@ -78,8 +93,12 @@ class Bot():
                     
                 except:
                     print("Error")
+        # -- end.. User chose to use their ezviews proxy list
+    # end.. start function.     
 
 
+
+    # -- Start.. Write proxy from internet to file
     def write_to_file(self,ipport):
 
         try:
@@ -89,40 +108,42 @@ class Bot():
 
         except:
             print("Error")
-
-    def LoadMenu(self):
-        root = Tk()
-
-        root.title("tbot")
-
-        root.geometry("500x500") #You want the size of the app to be 500x500
-        root.resizable(0, 0) #Don't allow resizing in the x or y direction
-        
-        l =ttk.Label(root, text="Starting...")
-        l.grid()
-
-        frame1 = Frame(root)
-        frame1.pack(side="bottom", fill="both", expand = True)
-        frame1.grid_rowconfigure(0, weight=1)
-        frame1.grid_columnconfigure(0, weight=1)
-        
-        button = ttk.Button(frame1, text="Hello", command="buttonpressed")
-        button.grid()
-        
-
-        button.bind('<Button-1>', lambda e: proxy_scan())
-        button.bind('<Enter>', lambda e: l.configure(text='Moved mouse inside'))
-        button.bind('<Leave>', lambda e: l.configure(text='Moved mouse outside'))
+    # -- end.. Write proxy from internet to file
 
 
-        
-        l.bind('<1>', lambda e: l.configure(text='Clicked lefouse button'))
-        l.bind('<Double-1>', lambda e: l.configure(text='Double clicked'))
-        l.bind('<B3-Motion>', lambda e: l.configure(text='right button drag to %d,%d' % (e.x, e.y)))
 
-        root.mainloop()
+    # -- Start.. Where proxies connect to url 
+    def BeginQueue(self, timer):
+      
+        for i in range(len(self.arr)): 
+            self.http_proxy.append("https://" + self.arr[i])
 
+            #1. Create timer random time between 0 and 10 minutes
+            value = random.randint(0,10)
+            mins  = 0
 
+            if timer == True:
+                print(value)
+                if value:
+                    while mins != 10:
+                        time.sleep(value)
+                        mins += 1
+                print(str(i) + ": " + str(value))
+
+            print("this is: " + str(self.http_proxy[i]))
+
+                  
+            proxies = {
+                  "https": self.http_proxy[i]
+            }
+            print(proxies["https"])
+            
+            #2. Make requests with proxies    
+            r = requests.get(self.url, proxies=proxies)
+            
+    # -- End.. Where proxies connect to url
+
+    
 James = Bot()
 
 James.main()
