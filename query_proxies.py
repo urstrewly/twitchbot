@@ -6,7 +6,6 @@
             TO DO LIST 
 
 
-    1. Start timer so proxies can have a queue
     2. Make proxies connect to url and remain connected
     3. Finish UI (optionally)
 
@@ -26,7 +25,7 @@ class Bot():
     url            = 0  #  url for stream
     arr            = [] # had to do more gay array shit
     http_proxy     = []
-    headers        = {'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; Pixel C Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.98 Safari/537.36'}
+    headers        = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246'}
     
     # start.. main function program start is here
     def main(self):  
@@ -34,7 +33,7 @@ class Bot():
 
             self.url = raw_input("url -> ")   
 
-        self.start(True)
+        self.start(False)
     # end.. main function program start is here
 
 
@@ -52,7 +51,7 @@ class Bot():
                     
                     self.arr.append(f.read())
                     
-                self.BeginQueue(False)
+                self.BeginQueue()
                 
             except:
                 print("Error")
@@ -77,14 +76,13 @@ class Bot():
                 for i in range(len(mydivs)):
                     
                     proxy = mydivs[i]
-                    self.arr.append(i)  
-                    self.arr[i] = str(proxy.text)
+                    self.arr.append(str(proxy.text))
                       
               
                 self.write_to_file(self.arr)
                 print(self.arr[1])
                 print(len(self.arr))
-                self.BeginQueue(True)
+                self.BeginQueue()
                            
             else:
                 print("server down trying custom_proxies.txt..")
@@ -115,39 +113,26 @@ class Bot():
 
 
     # -- Start.. Where proxies connect to url 
-    def BeginQueue(self, timer):
+    def BeginQueue(self):
       
         for i in range(len(self.arr)): 
-            self.http_proxy.append("https://user:pass@" + self.arr[i])
-
-            #1. Create timer random time between 0 and 10 minutes
-            value = random.randint(0,10)
-            mins  = 0
-
-            if timer == True:
-                print(value)
-                if value:
-                    while mins != 10:
-                        time.sleep(value)
-                        mins += 1
-                print(str(i) + ": " + str(value))
-
-        print("this is: " + str(self.http_proxy[i]))
-
-                  
-        proxies = {
-                "https": self.http_proxy[i]
-        }
+            self.http_proxy.append("https://" + self.arr[i])
+         
+            proxies = {
+                    "https": self.http_proxy[i]
+            }
             
-        #2. Make requests with proxies
+            #2. Make requests with proxies
             
             
-        try:
-            print("1")
-            r = requests.get(self.url, headers=self.headers, proxies=proxies)
-            print(str(self.http_proxy[i]) + "--> good proxy..")
-        except:
-            print(str(self.http_proxy[i]) + "--> Bad proxy..")
+            try:
+               
+                r = requests.get(self.url, headers=self.headers, proxies=proxies)
+
+                if r.status_code == 200:
+                    print(str(self.http_proxy[i]) + "--> good proxy..")
+            except:
+                print(str(self.http_proxy[i]) + "--> Bad proxy..")
     # -- End.. Where proxies connect to url
 
     
