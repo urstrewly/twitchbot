@@ -26,7 +26,7 @@ class Bot():
     url            = 0  #  url for stream
     arr            = [] # had to do more gay array shit
     http_proxy     = []
-
+    headers        = {'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; Pixel C Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.98 Safari/537.36'}
     
     # start.. main function program start is here
     def main(self):  
@@ -34,7 +34,7 @@ class Bot():
 
             self.url = raw_input("url -> ")   
 
-        self.start(False)
+        self.start(True)
     # end.. main function program start is here
 
 
@@ -50,8 +50,10 @@ class Bot():
             try:
                 with open(self.custom_proxies, 'r') as f:
                     
-                    print(f.read())
-                    self.BeginQueue(False)
+                    self.arr.append(f.read())
+                    
+                self.BeginQueue(False)
+                
             except:
                 print("Error")
         # -- end.. User chose to use their own proxy list
@@ -116,7 +118,7 @@ class Bot():
     def BeginQueue(self, timer):
       
         for i in range(len(self.arr)): 
-            self.http_proxy.append("https://" + self.arr[i])
+            self.http_proxy.append("https://user:pass@" + self.arr[i])
 
             #1. Create timer random time between 0 and 10 minutes
             value = random.randint(0,10)
@@ -130,17 +132,22 @@ class Bot():
                         mins += 1
                 print(str(i) + ": " + str(value))
 
-            print("this is: " + str(self.http_proxy[i]))
+        print("this is: " + str(self.http_proxy[i]))
 
                   
-            proxies = {
-                  "https": self.http_proxy[i]
-            }
-            print(proxies["https"])
+        proxies = {
+                "https": self.http_proxy[i]
+        }
             
-            #2. Make requests with proxies    
-            r = requests.get(self.url, proxies=proxies)
+        #2. Make requests with proxies
             
+            
+        try:
+            print("1")
+            r = requests.get(self.url, headers=self.headers, proxies=proxies)
+            print(str(self.http_proxy[i]) + "--> good proxy..")
+        except:
+            print(str(self.http_proxy[i]) + "--> Bad proxy..")
     # -- End.. Where proxies connect to url
 
     
