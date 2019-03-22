@@ -114,7 +114,8 @@ class Bot():
 
     # -- Start.. Where proxies connect to url 
     def BeginQueue(self):
-      
+        good = 0
+        bad = 0
         for i in range(len(self.arr)): 
             self.http_proxy.append("https://" + self.arr[i])
          
@@ -130,9 +131,13 @@ class Bot():
                 r = requests.get(self.url, headers=self.headers, proxies=proxies)
 
                 if r.status_code == 200:
-                    print(str(self.http_proxy[i]) + "--> good proxy..")
+                    
+                    good += 1
             except:
-                print(str(self.http_proxy[i]) + "--> Bad proxy..")
+                
+                bad += 1
+
+            print("Total of connected: " + str(good) + " : Total Bad of proxies: " + str(bad))
     # -- End.. Where proxies connect to url
 
     
